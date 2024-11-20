@@ -1,0 +1,106 @@
+PROGRAM:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX 100
+
+typedef struct GraphMatrix {
+    int vertices;
+    int adjMatrix[MAX][MAX];
+} GraphMatrix;
+
+
+void initGraphMatrix(GraphMatrix* g, int vertices) {
+	int i; int j;
+    g->vertices = vertices;
+    for (i = 0; i < vertices; i++) {
+        for ( j = 0; j < vertices; j++) {
+            g->adjMatrix[i][j] = 0;
+        }
+    }
+}
+
+
+void addEdgeMatrix(GraphMatrix* g, int u, int v) {
+    g->adjMatrix[u][v] = 1;
+    g->adjMatrix[v][u] = 1; 
+}
+
+
+void displayMatrix(GraphMatrix* g) {
+	int i; int j;
+    for ( i = 0; i < g->vertices; i++) {
+        for (j = 0; j < g->vertices; j++) {
+            printf("%d ", g->adjMatrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
+void bfsMatrix(GraphMatrix* g, int start) {
+    bool visited[MAX] = {false};
+    int queue[MAX], front = 0, rear = 0;
+
+    printf("BFS Traversal: ");
+    visited[start] = true;
+    queue[rear++] = start;
+
+    while (front < rear) {
+    	int i;
+        int current = queue[front++];
+        printf("%d ", current);
+
+        for (i = 0; i < g->vertices; i++) {
+            if (g->adjMatrix[current][i] && !visited[i]) {
+                visited[i] = true;
+                queue[rear++] = i;
+            }
+        }
+    }
+    printf("\n");
+}
+
+
+void dfsMatrixUtil(GraphMatrix* g, int vertex, bool visited[]) {
+	int i;
+    visited[vertex] = true;
+    printf("%d ", vertex);
+
+    for (i = 0; i < g->vertices; i++) {
+        if (g->adjMatrix[vertex][i] && !visited[i]) {
+            dfsMatrixUtil(g, i, visited);
+        }
+    }
+}
+
+
+void dfsMatrix(GraphMatrix* g, int start) {
+    bool visited[MAX] = {false};
+    printf("DFS Traversal: ");
+    dfsMatrixUtil(g, start, visited);
+    printf("\n");
+}
+
+int main() {
+    GraphMatrix g;
+    initGraphMatrix(&g, 5);
+
+    addEdgeMatrix(&g, 0, 1);
+    addEdgeMatrix(&g, 0, 4);
+    addEdgeMatrix(&g, 1, 2);
+    addEdgeMatrix(&g, 1, 3);
+    addEdgeMatrix(&g, 1, 4);
+    addEdgeMatrix(&g, 2, 3);
+    addEdgeMatrix(&g, 3, 4);
+
+    printf("Adjacency Matrix:\n");
+    displayMatrix(&g);
+
+    bfsMatrix(&g, 0);
+    dfsMatrix(&g, 0);
+
+    return 0;
+}
